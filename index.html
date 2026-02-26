@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Keuangan - Mahasiswa</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f9; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #333; }
+        form { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        input, select, button { margin: 5px 0; padding: 10px; width: 100%; box-sizing: border-box; }
+        button { background-color: #5d5cde; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #4a49b8; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f8f9fa; }
+        .masuk { color: green; font-weight: bold; }
+        .keluar { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Catat Keuangan Baru</h2>
+    <form action="api/tambah.php" method="POST">
+        <label>Tanggal:</label>
+        <input type="date" name="tanggal" required>
+        
+        <label>Keterangan:</label>
+        <input type="text" name="keterangan" placeholder="Contoh: Makan Siang" required>
+        
+        <label>Jumlah (Rp):</label>
+        <input type="number" name="jumlah" placeholder="Contoh: 15000" required>
+        
+        <label>Jenis Transaksi:</label>
+        <select name="tipe">
+            <option value="keluar">Pengeluaran</option>
+            <option value="masuk">Pemasukan</option>
+        </select>
+        
+        <button type="submit">Simpan Transaksi</button>
+    </form>
+
+    <hr>
+
+    <h2>Riwayat Keuangan</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+                <th>Jumlah</th>
+                <th>Tipe</th>
+            </tr>
+        </thead>
+        <tbody id="data-keuangan">
+            </tbody>
+    </table>
+</div>
+
+<script>
+    // Fungsi untuk mengambil data dari TiDB via get_data.php
+    async function loadData() {
+        try {
+            const response = await fetch('api/get_data.php'); // Memanggil API PHP
+            const data = await response.json();
+            
+            const tbody = document.getElementById('data-keuangan');
+            tbody.innerHTML = ''; // Bersihkan tabel sebelum diisi
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                const tipeClass = item.tipe === 'masuk' ? 'masuk' : 'keluar';
+                
+                row.innerHTML = `
+                    <td>${item.tanggal}</td>
+                    <td>${item.keterangan}</td>
+                    <td>Rp ${parseInt(item.jumlah).toLocaleString('id-ID')}</td>
+                    <td class="${tipeClass}">${item.tipe.toUpperCase()}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Gagal mengambil data:', error);
+        }
+    }
+
+    // Jalankan fungsi saat halaman dibuka
+    loadData();
+</script>
+
+</body>
+</html>
