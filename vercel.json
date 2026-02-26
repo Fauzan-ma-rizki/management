@@ -6,9 +6,14 @@
   },
   "routes": [
     { 
-      "src": "/api/(.*).php", 
-      "dest": "/api/$1.php",
-      "methods": ["GET", "POST"] 
+      "src": "/api/tambah.php", 
+      "dest": "/api/tambah.php",
+      "methods": ["POST"] 
+    },
+    { 
+      "src": "/api/get_data.php", 
+      "dest": "/api/get_data.php",
+      "methods": ["GET"] 
     },
     { "src": "/(.*)", "dest": "/$1" }
   ]
